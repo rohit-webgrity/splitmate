@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>SplitMate — Trip Expense Splitting</title>
+    <link rel="stylesheet" href="src/css/main.css">
+    <style>
+        :root { --primary: rgb(4, 120, 87); --bg: #ffffff; }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; margin: 0; color: #1d1d1f; }
+        .hero { height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 20px; }
+        .logo-box { width: 80px; height: 80px; margin-bottom: 24px; }
+        h1 { font-size: 2.5rem; font-weight: 700; margin: 0; letter-spacing: -0.02em; }
+        p { color: #86868b; font-size: 1.1rem; max-width: 300px; margin: 12px 0 32px; }
+        .btn-install { 
+            background: var(--primary); color: white; border: none; padding: 16px 32px; 
+            border-radius: 12px; font-size: 1rem; font-weight: 600; cursor: pointer;
+            transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            display: none; /* Hidden until prompt is ready */
+        }
+        .btn-install:active { transform: scale(0.96); }
+        .features { display: grid; gap: 20px; margin-top: 40px; text-align: left; max-width: 400px; }
+        .feature-item { display: flex; align-items: center; gap: 12px; font-weight: 500; }
+        .feature-icon { color: var(--primary); font-size: 1.2rem; }
+    </style>
+</head>
+<body>
+
+    <section class="hero">
+        <div class="logo-box">
+            <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="50" cy="50" r="45" stroke="rgb(4, 120, 87)" stroke-width="10"/>
+                <path d="M40 35H60L40 65H60" stroke="rgb(4, 120, 87)" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+        </div>
+        <h1>SplitMate</h1>
+        <p>Effortless trip splitting for friends who travel together.</p>
+
+        <button id="installBtn" class="btn-install">Install App</button>
+
+        <div class="features">
+            <div class="feature-item"><span class="feature-icon">✓</span> Shared Trip Ledger</div>
+            <div class="feature-item"><span class="feature-icon">✓</span> Smart Debt Simplification</div>
+            <div class="feature-item"><span class="feature-icon">✓</span> UPI QR Payment Integration</div>
+        </div>
+    </section>
+
+    <script>
+        // 1. Detect if already installed or in standalone mode
+        const isStandalone = window.matchMedia('(display-mode: standalone)').matches || navigator.standalone;
+
+        if (isStandalone) {
+            window.location.href = '/app';
+        }
+
+        // 2. PWA Install Logic
+        let deferredPrompt;
+        const installBtn = document.getElementById('installBtn');
+
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            installBtn.style.display = 'block';
+        });
+
+        installBtn.addEventListener('click', async () => {
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+                const { outcome } = await deferredPrompt.userChoice;
+                if (outcome === 'accepted') {
+                    console.log('User installed SplitMate');
+                }
+                deferredPrompt = null;
+                installBtn.style.display = 'none';
+            }
+        });
+
+        // 3. Optional: Redirect if user is already logged in (Check LocalStorage)
+        if (localStorage.getItem('firebase:authUser')) {
+             window.location.href = '/app';
+        }
+    </script>
+</body>
+</html>
