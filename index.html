@@ -3,82 +3,644 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>SplitMate — Trip Expense Splitting</title>
-    <link rel="stylesheet" href="src/css/main.css">
+    <title>SplitMate — The smartest way to split trip expenses</title>
     <style>
-        :root { --primary: rgb(4, 120, 87); --bg: #ffffff; }
-        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; margin: 0; color: #1d1d1f; }
-        .hero { height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 20px; }
-        .logo-box { width: 80px; height: 80px; margin-bottom: 24px; }
-        h1 { font-size: 2.5rem; font-weight: 700; margin: 0; letter-spacing: -0.02em; }
-        p { color: #86868b; font-size: 1.1rem; max-width: 300px; margin: 12px 0 32px; }
-        .btn-install { 
-            background: var(--primary); color: white; border: none; padding: 16px 32px; 
-            border-radius: 12px; font-size: 1rem; font-weight: 600; cursor: pointer;
-            transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-            display: none; /* Hidden until prompt is ready */
+        :root {
+            --primary: rgb(4, 120, 87);
+            --primary-dark: rgb(3, 105, 77);
+            --primary-light: #d1fae5;
+            --primary-text: #065f46;
+            --gray-light: #f9fafb;
+            --gray-border: rgba(0, 0, 0, 0.06);
+            --text-main: #1d1d1f;
+            --text-secondary: #6b7280;
+            --apple-font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
         }
-        .btn-install:active { transform: scale(0.96); }
-        .features { display: grid; gap: 20px; margin-top: 40px; text-align: left; max-width: 400px; }
-        .feature-item { display: flex; align-items: center; gap: 12px; font-weight: 500; }
-        .feature-icon { color: var(--primary); font-size: 1.2rem; }
+
+        * {
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: var(--apple-font);
+            color: var(--text-main);
+            background-color: #fff;
+            line-height: 1.5;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* --- STICKY NAVBAR --- */
+        .navbar {
+            position: sticky;
+            top: 0;
+            width: 100%;
+            max-width: 430px;
+            height: 52px;
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--gray-border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+            z-index: 100;
+        }
+
+        .logo-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 600;
+            font-size: 18px;
+            color: var(--primary);
+            text-decoration: none;
+        }
+
+        .badge-free {
+            background: var(--primary-light);
+            color: var(--primary-text);
+            font-size: 11px;
+            font-weight: 600;
+            padding: 2px 8px;
+            border-radius: 100px;
+        }
+
+        /* --- CONTENT WRAPPER --- */
+        .container {
+            width: 100%;
+            max-width: 430px;
+            padding: 0 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* --- HERO SECTION --- */
+        .hero {
+            padding: 48px 0 24px;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .micro-pill {
+            display: inline-block;
+            background: var(--primary-light);
+            color: var(--primary-text);
+            font-size: 12px;
+            font-weight: 500;
+            padding: 4px 12px;
+            border-radius: 100px;
+            margin-bottom: 16px;
+        }
+
+        h1 {
+            font-size: 32px;
+            font-weight: 500;
+            line-height: 1.2;
+            margin: 0 0 16px;
+            letter-spacing: -0.02em;
+        }
+
+        h1 span {
+            color: var(--primary);
+        }
+
+        .subheading {
+            font-size: 16px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+            margin: 0 auto 32px;
+            max-width: 320px;
+        }
+
+        .cta-button {
+            width: 100%;
+            max-width: 300px;
+            height: 52px;
+            background: var(--primary);
+            color: #fff;
+            border: none;
+            border-radius: 14px;
+            font-size: 15px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            cursor: pointer;
+            transition: background 0.2s;
+            margin-bottom: 8px;
+        }
+
+        .cta-button:hover {
+            background: var(--primary-dark);
+        }
+
+        .fine-text {
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-bottom: 40px;
+        }
+
+        /* --- PHONE MOCKUP --- */
+        .phone-mockup {
+            width: 200px;
+            height: 360px;
+            border: 6px solid #1d1d1f;
+            border-radius: 32px;
+            padding: 12px;
+            position: relative;
+            background: #fff;
+            overflow: hidden;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.05);
+            text-align: left; /* Keep internal text left aligned */
+        }
+
+        .mock-header {
+            font-size: 10px;
+            font-weight: 700;
+            margin-bottom: 12px;
+        }
+
+        .mock-card {
+            background: var(--gray-light);
+            border-radius: 8px;
+            padding: 8px;
+            margin-bottom: 8px;
+        }
+
+        .mock-card-title {
+            font-size: 9px;
+            font-weight: 600;
+            margin-bottom: 2px;
+        }
+
+        .mock-card-meta {
+            font-size: 7px;
+            color: var(--text-secondary);
+        }
+
+        .mock-badge {
+            display: inline-block;
+            font-size: 6px;
+            color: var(--primary-text);
+            background: var(--primary-light);
+            padding: 1px 4px;
+            border-radius: 4px;
+            margin-top: 4px;
+        }
+
+        .mock-fab {
+            position: absolute;
+            bottom: 16px;
+            right: 16px;
+            width: 28px;
+            height: 28px;
+            background: var(--primary);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 14px;
+        }
+
+        /* --- SECTION HEADERS --- */
+        .section-label {
+            font-size: 11px;
+            text-transform: uppercase;
+            color: var(--primary);
+            letter-spacing: 0.05em;
+            font-weight: 600;
+            margin-top: 64px;
+            margin-bottom: 8px;
+            text-align: center;
+        }
+
+        .section-title {
+            font-size: 24px;
+            font-weight: 500;
+            margin-bottom: 8px;
+            text-align: center;
+        }
+
+        .section-desc {
+            font-size: 15px;
+            color: var(--text-secondary);
+            text-align: center;
+            margin-bottom: 40px;
+            max-width: 340px;
+        }
+
+        /* --- FEATURES GRID --- */
+        .features-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            width: 100%;
+        }
+
+        .feature-card {
+            background: var(--gray-light);
+            border-radius: 16px;
+            padding: 20px 16px;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .feature-icon-box {
+            width: 36px;
+            height: 36px;
+            background: var(--primary-light);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 12px;
+            color: var(--primary);
+        }
+
+        .feature-title {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 6px;
+        }
+
+        .feature-desc {
+            font-size: 12px;
+            color: var(--text-secondary);
+            line-height: 1.4;
+        }
+
+        /* --- HOW IT WORKS --- */
+        .how-list {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 32px;
+            margin-bottom: 40px;
+        }
+
+        .step-item {
+            display: flex;
+            gap: 16px;
+            align-items: flex-start;
+            text-align: left;
+        }
+
+        .step-num {
+            width: 28px;
+            height: 28px;
+            background: var(--primary);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .step-content h3 {
+            font-size: 16px;
+            font-weight: 600;
+            margin: 0 0 4px;
+        }
+
+        .step-content p {
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin: 0;
+            line-height: 1.5;
+        }
+
+        /* --- FOOTER --- */
+        .footer {
+            padding: 64px 0 32px;
+            text-align: center;
+            width: 100%;
+            border-top: 1px solid var(--gray-border);
+            margin-top: 32px;
+        }
+
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .footer-links a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 14px;
+        }
+
+        .copyright {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        /* --- IOS MODAL --- */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.4);
+            z-index: 1000;
+            align-items: flex-end;
+            justify-content: center;
+        }
+
+        .ios-modal {
+            background: #fff;
+            width: 100%;
+            max-width: 430px;
+            border-top-left-radius: 20px;
+            border-top-right-radius: 20px;
+            padding: 24px;
+            animation: slideUp 0.3s ease-out;
+        }
+
+        @keyframes slideUp {
+            from { transform: translateY(100%); }
+            to { transform: translateY(0); }
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .modal-header h2 {
+            font-size: 20px;
+            margin: 0;
+        }
+
+        .close-modal {
+            font-size: 24px;
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            cursor: pointer;
+        }
+
+        .ios-step {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 16px;
+            font-size: 15px;
+        }
+
+        .ios-icon {
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--gray-light);
+            border-radius: 8px;
+        }
     </style>
 </head>
 <body>
 
-    <section class="hero">
-        <div class="logo-box">
-            <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <circle cx="50" cy="50" r="45" stroke="rgb(4, 120, 87)" stroke-width="10"/>
-                <path d="M40 35H60L40 65H60" stroke="rgb(4, 120, 87)" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
+    <nav class="navbar">
+        <a href="#" class="logo-group">
+            <svg width="24" height="24" viewBox="0 0 512 512" fill="none">
+                <circle cx="256" cy="256" r="240" stroke="rgb(4, 120, 87)" stroke-width="48"/>
+                <path d="M256 32V480" stroke="rgb(4, 120, 87)" stroke-width="32" stroke-dasharray="20 20"/>
+                <path d="M320 160C320 160 280 120 240 120C180 120 140 160 140 210C140 280 372 230 372 300C372 350 332 392 272 392C232 392 192 352 192 352" stroke="rgb(4, 120, 87)" stroke-width="44" stroke-linecap="round" stroke-linejoin="round"/>
             </svg>
-        </div>
-        <h1>SplitMate</h1>
-        <p>Effortless trip splitting for friends who travel together.</p>
+            SplitMate
+        </a>
+        <span class="badge-free">Free</span>
+    </nav>
 
-        <button id="installBtn" class="btn-install">Install App</button>
+    <div class="container">
+        <!-- Hero Section -->
+        <section class="hero">
+            <div class="micro-pill">Split trips, not friendships</div>
+            <h1>The smartest way to<br><span>split trip expenses</span></h1>
+            <p class="subheading">Create a trip, add expenses, and SplitMate figures out exactly who owes what — with UPI QR payments built in.</p>
+            
+            <button id="install-btn" class="cta-button">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                Install SplitMate
+            </button>
+            <p class="fine-text">Free · Works offline · No app store needed</p>
 
-        <div class="features">
-            <div class="feature-item"><span class="feature-icon">✓</span> Shared Trip Ledger</div>
-            <div class="feature-item"><span class="feature-icon">✓</span> Smart Debt Simplification</div>
-            <div class="feature-item"><span class="feature-icon">✓</span> UPI QR Payment Integration</div>
+            <div class="phone-mockup">
+                <div class="mock-header">My trips</div>
+                <div class="mock-card">
+                    <div class="mock-card-title">Goa 2025</div>
+                    <div class="mock-card-meta">4 members · ₹12,400</div>
+                    <div class="mock-badge">Active</div>
+                </div>
+                <div class="mock-card">
+                    <div class="mock-card-title">Himalayan Trek</div>
+                    <div class="mock-card-meta">6 members · ₹45,000</div>
+                    <div class="mock-badge">Active</div>
+                </div>
+                <div class="mock-card">
+                    <div class="mock-card-title">Bangalore Weekend</div>
+                    <div class="mock-card-meta">3 members · ₹4,200</div>
+                    <div class="mock-badge" style="background:#e5e7eb; color:#4b5563;">Settled</div>
+                </div>
+                <div class="mock-fab">+</div>
+            </div>
+        </section>
+
+        <!-- Features -->
+        <div class="section-label">Features</div>
+        <h2 class="section-title">Everything your group trip needs</h2>
+        <p class="section-desc">From the first expense to the final payment — all in one place.</p>
+
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon-box">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 3v11a2 2 0 0 0 2 2h5"/><path d="M13 16h5a2 2 0 0 0 2-2V3"/><path d="M12 16v5"/></svg>
+                </div>
+                <div class="feature-title">Smart splitting</div>
+                <div class="feature-desc">Equal or fully custom amounts per member.</div>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon-box">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><path d="M7 7h.01"/><path d="M17 7h.01"/><path d="M17 17h.01"/><path d="M7 17h.01"/></svg>
+                </div>
+                <div class="feature-title">UPI QR pay</div>
+                <div class="feature-desc">Scan a friend's QR and pay instantly.</div>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon-box">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 20V10"/><path d="M12 20V4"/><path d="M6 20v-6"/></svg>
+                </div>
+                <div class="feature-title">Trip stats</div>
+                <div class="feature-desc">Visual breakdown and PDF exports.</div>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon-box">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+                </div>
+                <div class="feature-title">Invite by code</div>
+                <div class="feature-desc">Friends join with a simple 6-char code.</div>
+            </div>
         </div>
-    </section>
+
+        <!-- How It Works -->
+        <div class="section-label">How it works</div>
+        <h2 class="section-title">Up and running in seconds</h2>
+        <div class="how-list">
+            <div class="step-item">
+                <div class="step-num">1</div>
+                <div class="step-content">
+                    <h3>Install the app</h3>
+                    <p>Tap the button above to add SplitMate to your home screen. Works offline.</p>
+                </div>
+            </div>
+            <div class="step-item">
+                <div class="step-num">2</div>
+                <div class="step-content">
+                    <h3>Create or join a trip</h3>
+                    <p>Create a trip in seconds or join with a friend's invite code.</p>
+                </div>
+            </div>
+            <div class="step-item">
+                <div class="step-num">3</div>
+                <div class="step-content">
+                    <h3>Log expenses as you go</h3>
+                    <p>Add who paid and split equally or by custom amounts per person.</p>
+                </div>
+            </div>
+            <div class="step-item">
+                <div class="step-num">4</div>
+                <div class="step-content">
+                    <h3>Settle with UPI</h3>
+                    <p>Tap Pay next to any balance, scan the QR, and you're done.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bottom CTA -->
+        <section style="text-align: center; padding: 48px 0 64px; border-top: 1px solid var(--gray-border); width: 100%;">
+            <h2 class="section-title">Ready to split smarter?</h2>
+            <p class="section-desc" style="margin-left: auto; margin-right: auto;">Install free — no account needed to browse. Sign up to save your trips.</p>
+            <button id="install-btn-bottom" class="cta-button" style="margin-left: auto; margin-right: auto;">Install SplitMate</button>
+        </section>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <div class="logo-group" style="justify-content: center;">
+                <svg width="20" height="20" viewBox="0 0 512 512" fill="none"><circle cx="256" cy="256" r="240" stroke="rgb(4, 120, 87)" stroke-width="48"/><path d="M256 32V480" stroke="rgb(4, 120, 87)" stroke-width="32" stroke-dasharray="20 20"/><path d="M320 160C320 160 280 120 240 120C180 120 140 160 140 210C140 280 372 230 372 300C372 350 332 392 272 392C232 392 192 352 192 352" stroke="rgb(4, 120, 87)" stroke-width="44" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                SplitMate
+            </div>
+            <div class="footer-links">
+                <a href="#">Privacy</a>
+                <a href="#">Terms</a>
+                <a href="#">Support</a>
+            </div>
+            <p class="copyright">© 2025 SplitMate. Free forever.</p>
+        </footer>
+    </div>
+
+    <!-- IOS INSTALL MODAL -->
+    <div id="ios-modal-overlay" class="modal-overlay">
+        <div class="ios-modal">
+            <div class="modal-header">
+                <h2>Install SplitMate on iOS</h2>
+                <button class="close-modal" id="close-modal">&times;</button>
+            </div>
+            <div class="ios-step">
+                <div class="ios-icon">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#007AFF" stroke-width="2"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>
+                </div>
+                <span>1. Tap the <strong>Share</strong> button in Safari</span>
+            </div>
+            <div class="ios-step">
+                <div class="ios-icon">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                </div>
+                <span>2. Select <strong>Add to Home Screen</strong></span>
+            </div>
+            <div class="ios-step">
+                <div class="ios-icon" style="background: var(--primary); color: white; font-weight: bold; font-size: 10px;">Add</div>
+                <span>3. Tap <strong>Add</strong> in the top right</span>
+            </div>
+            <button class="cta-button" style="margin-top: 10px; width: 100%; max-width: none;" id="got-it">Got it</button>
+        </div>
+    </div>
 
     <script>
-        // 1. Detect if already installed or in standalone mode
-        const isStandalone = window.matchMedia('(display-mode: standalone)').matches || navigator.standalone;
-
-        if (isStandalone) {
-            window.location.href = '/app';
+        // 1. Immediate Install Check
+        const isInstalled = window.matchMedia('(display-mode: standalone)').matches 
+                          || window.navigator.standalone === true;
+        
+        if (isInstalled) {
+            window.location.href = './app';
         }
 
-        // 2. PWA Install Logic
+        // 2. Service Worker Registration
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', function() {
+                navigator.serviceWorker.register('./service-worker.js').catch(function(err) {
+                    // Silently fail if file doesn't exist yet to avoid console noise
+                });
+            });
+        }
+
+        // 3. PWA Install Logic
         let deferredPrompt;
-        const installBtn = document.getElementById('installBtn');
+        const installBtn = document.getElementById('install-btn');
+        const installBtnBottom = document.getElementById('install-btn-bottom');
+        const iosModal = document.getElementById('ios-modal-overlay');
+        const closeModal = document.getElementById('close-modal');
+        const gotIt = document.getElementById('got-it');
 
         window.addEventListener('beforeinstallprompt', (e) => {
             e.preventDefault();
             deferredPrompt = e;
-            installBtn.style.display = 'block';
         });
 
-        installBtn.addEventListener('click', async () => {
+        function handleInstallClick() {
+            const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+
             if (deferredPrompt) {
                 deferredPrompt.prompt();
-                const { outcome } = await deferredPrompt.userChoice;
-                if (outcome === 'accepted') {
-                    console.log('User installed SplitMate');
-                }
-                deferredPrompt = null;
-                installBtn.style.display = 'none';
+                deferredPrompt.userChoice.then((choiceResult) => {
+                    deferredPrompt = null;
+                });
+            } else if (isIOS) {
+                iosModal.style.display = 'flex';
+            } else {
+                window.location.href = './app';
             }
-        });
-
-        // 3. Optional: Redirect if user is already logged in (Check LocalStorage)
-        if (localStorage.getItem('firebase:authUser')) {
-             window.location.href = '/app';
         }
+
+        installBtn.addEventListener('click', handleInstallClick);
+        installBtnBottom.addEventListener('click', handleInstallClick);
+
+        closeModal.addEventListener('click', () => iosModal.style.display = 'none');
+        gotIt.addEventListener('click', () => iosModal.style.display = 'none');
+        iosModal.addEventListener('click', (e) => {
+            if (e.target === iosModal) iosModal.style.display = 'none';
+        });
     </script>
 </body>
 </html>
